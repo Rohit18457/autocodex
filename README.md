@@ -1,73 +1,79 @@
-# 🌦️ ReAct Weather & Automation AI Agent
+# ⚡ Autonomous CLI AI Coding & Automation Assistant
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Groq Cloud](https://img.shields.io/badge/Powered%20by-Groq%20LPU-orange.svg)](https://groq.com/)
+[![Groq LPU](https://img.shields.io/badge/Inference-Groq%20LPU-orange.svg)](https://groq.com/)
 [![Pydantic v2](https://img.shields.io/badge/schema-Pydantic%20v2-green.svg)](https://docs.pydantic.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An autonomous, multi-step planning and tool-using AI agent built with **Python**, **Groq LPU Inference Engine**, and **Pydantic v2**. 
+An autonomous, terminal-native AI Coding and Task Execution Agent built in **Python**, powered by **Groq Cloud's ultra-fast LPU inference engine**, and structured with **Pydantic v2**.
 
-The agent employs a **ReAct (Reasoning + Acting)** and **Chain-of-Thought (CoT)** execution loop, enabling it to decompose complex user prompts into discrete planning phases, invoke real-time tools, observe results, and formulate concise, hallucination-free outputs.
-
----
-
-## ⚡ Key Highlights
-
-- **🧠 Multi-Step Plan & Solve Loop:** Implements explicit lifecycle states: `START` ➔ `PLAN` ➔ `TOOL` ➔ `OBSERVE` ➔ `OUTPUT`.
-- **🛡️ Strict Structured JSON Outputs:** Guarantees deterministic, machine-readable responses using Groq's strict schema compliance (`strict: True`, `additionalProperties: false`).
-- **🛠️ Extensible Tool Registry:**
-  - `get_weather(city)`: Fetches real-time weather information via `wttr.in`.
-  - `run_command(cmd)`: Safely captures stdout and stderr from system commands with timeouts.
-- **🔄 Robust Error Handling & Safeguards:**
-  - Loop boundary protections (`max_steps_per_query`) to avoid token drain and infinite loops.
-  - Safe exception wrappers across API connectivity and network endpoints.
+Operating on the **ReAct (Reasoning + Acting)** and **Chain-of-Thought (CoT)** execution loop, the agent plans multi-step solutions, inspects workspaces, creates and edits source code files, executes shell commands, and reports verified results directly to your terminal.
 
 ---
 
-## 🏗️ Architecture & Workflow
+## 🚀 Key Capabilities
+
+- **📁 File System Operations:**
+  - `list_files(path)`: Explore directories, inspect structures, and verify file paths.
+  - `read_file(path)`: Read and inspect codebase contents.
+  - `write_file(path, content)`: Autonomously write full scripts, configs, and documentation.
+  - `edit_file(path, find_text, replace_text)`: Target and refactor code without rewriting entire files.
+- **💻 Safe Shell Command Runner:**
+  - `run_command(command)`: Execute terminal commands (e.g. `python script.py`, `pytest`, `git status`) and capture real `stdout`/`stderr` outputs.
+- **🌦️ Utility Tools:**
+  - `get_weather(city)`: Fetch live weather conditions via `wttr.in`.
+- **🛡️ Strict JSON Schema Validation:**
+  - Guarantees deterministic, machine-readable steps using Groq's strict schema compliance (`strict: True`, `additionalProperties: false`).
+- **🔄 Fault-Tolerant ReAct Loop:**
+  - Protected against runaway token drain and infinite loops via a dynamic `max_steps_per_query` guard.
+
+---
+
+## 🏗️ Architecture & Execution Loop
 
 ```mermaid
 flowchart TD
-    User([User Prompt]) --> Agent[Agent Decision Engine]
-    Agent -->|Step 1| Start[START: Understand Query]
-    Start -->|Step 2| Plan[PLAN: Break down tasks]
+    User([User Request in Terminal]) --> Agent[Agent Cognitive Loop]
+    Agent -->|Step 1| Start[START: Parse Goal]
+    Start -->|Step 2| Plan[PLAN: Formulate Step]
     Plan --> Decision{Requires Tool?}
-    Decision -->|Yes| Tool[TOOL: Execute get_weather or run_command]
-    Tool --> Observe[OBSERVE: Feed result back into conversation]
+    Decision -->|Yes| Tool[TOOL: list_files / read_file / write_file / edit_file / run_command]
+    Tool --> Execute[Dispatcher Executes Tool & Captures Output]
+    Execute --> Observe[OBSERVE: Feed result back into Agent context]
     Observe --> Plan
-    Decision -->|No| Output[OUTPUT: Final synthesis to user]
-    Output --> Done([End of Turn])
+    Decision -->|No| Output[OUTPUT: Synthesize & Deliver Response]
+    Output --> Done([Ready for Next User Command])
 ```
 
 ---
 
-## 📁 Repository Structure
+## 📂 Project Structure
 
 ```text
 Weather_Agent/
-├── Agent.py            # Core Agent engine, tool dispatcher, & ReAct loop
-├── requirements.txt    # Project dependencies
-├── .env.example        # Environment variable template
-├── .gitignore          # Version control ignore list (excludes .env)
+├── Agent.py            # Core CLI Agent engine, tool dispatcher, & ReAct loop
+├── requirements.txt    # Python dependencies
+├── .env.example        # Environment variable configuration template
+├── .gitignore          # Ignores .env and cache directories
 └── README.md           # Project documentation
 ```
 
 ---
 
-## 🚀 Quickstart Guide
+## ⚡ Quickstart
 
 ### 1. Prerequisites
 - **Python 3.10+**
-- A **Groq Cloud API Key** ([Get a free key here](https://console.groq.com/keys))
+- A **Groq Cloud API Key** ([Get your free key here](https://console.groq.com/keys))
 
 ### 2. Clone and Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/<your-repo-name>.git
-cd <your-repo-name>
+git clone https://github.com/Rohit18457/ReAct-Weather-Agent.git
+cd ReAct-Weather-Agent
 
-# Create and activate a virtual environment
+# Create and activate virtual environment
 python -m venv venv
 # On Windows:
 .\venv\Scripts\activate
@@ -78,21 +84,21 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment Variables
+### 3. Configure API Key
 
-Create a `.env` file in the project root:
+Create a `.env` file from the example template:
 
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` and add your Groq API key:
+Open `.env` and paste your Groq API key:
 
 ```env
-GROQ_API_KEY=gsk_your_actual_key_here
+GROQ_API_KEY=gsk_your_groq_api_key_here
 ```
 
-### 4. Run the Agent
+### 4. Run the CLI Assistant
 
 ```bash
 python Agent.py
@@ -100,34 +106,47 @@ python Agent.py
 
 ---
 
-## 💬 Sample Execution Trace
+## 💬 Live Interaction Example
 
 ```text
-AI Agent started. Type 'exit' to stop.
+============================================================
+🤖 CLI AI Coding & Automation Assistant Started
+Commands: Type your task or type 'exit' to quit.
+============================================================
 
-You: What is the current weather in Pune?
-🔥 You want to know the current weather in Pune.
-🧠 I will call the weather tool to get Pune's weather details.
-🛠️ get_weather (Pune)
-👀 Observation: The weather in Pune is Clear +28°C
-🧠 Format and summarize the result for the user.
-🤖 The current weather in Pune is Clear with a temperature of 28°C.
+You > create a python script named math_demo.py that calculates factorials and test it.
+
+🔥 You want to create a script named math_demo.py that calculates factorials and test it.
+🧠 I will write math_demo.py with a factorial function and a test call.
+🛠️ Tool: write_file
+   Input: {"path": "math_demo.py", "content": "def factorial(n):\n    return 1 if n <= 1 else n * factorial(n - 1)\n\nprint('Factorial of 5 is:', factorial(5))\n"}
+👀 Observation:
+Successfully wrote 102 characters to 'math_demo.py'.
+
+🧠 Now I will execute the script using run_command to verify it works.
+🛠️ Tool: run_command
+   Input: {"command": "python math_demo.py"}
+👀 Observation:
+Factorial of 5 is: 120
+
+🤖 Answer:
+Created 'math_demo.py' and tested it successfully. Output: Factorial of 5 is: 120.
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Component | Technology | Purpose |
+| Component | Technology | Role |
 | :--- | :--- | :--- |
-| **LLM Inference** | [Groq Cloud](https://groq.com/) (`qwen/qwen3.8-27b`) | Sub-second ultra-fast LLM generation |
-| **Validation** | [Pydantic v2](https://docs.pydantic.dev/) | Strict JSON schema generation and parsing |
-| **HTTP Client** | `requests` | Weather API interactions |
-| **Environment** | `python-dotenv` | Secure API key management |
+| **LLM Inference** | [Groq Cloud](https://groq.com/) (`qwen/qwen3.8-27b`) | Sub-second LPU reasoning & generation |
+| **Data Validation** | [Pydantic v2](https://docs.pydantic.dev/) | Strict JSON schema definitions & validation |
+| **Runtime & Execution** | Python `subprocess` & `os` | Sandboxed file I/O & command execution |
+| **Networking** | `requests` | Weather integration |
+| **Configuration** | `python-dotenv` | Secure API key handling |
 
 ---
 
 ## 📜 License
 
-This project is open-source under the [MIT License](LICENSE).
-
+Distributed under the [MIT License](LICENSE).
