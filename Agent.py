@@ -240,7 +240,7 @@ class MyOutputFormat(BaseModel):
 
 def main():
     print("=" * 60)
-    print("🤖 CLI AI Coding & Automation Assistant Started")
+    print("🤖 AutoCodeX — CLI AI Coding & Automation Assistant Started")
     print("Commands: Type your task or type 'exit' to quit.")
     print("=" * 60)
 

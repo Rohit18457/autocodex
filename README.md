@@ -1,4 +1,4 @@
-# ⚡ Autonomous CLI AI Coding & Automation Assistant
+# ⚡ AutoCodeX — Autonomous CLI AI Coding & Automation Assistant
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Groq LPU](https://img.shields.io/badge/Inference-Groq%20LPU-orange.svg)](https://groq.com/)
@@ -50,7 +50,7 @@ flowchart TD
 ## 📂 Project Structure
 
 ```text
-Weather_Agent/
+autocodex/
 ├── Agent.py            # Core CLI Agent engine, tool dispatcher, & ReAct loop
 ├── requirements.txt    # Python dependencies
 ├── .env.example        # Environment variable configuration template
@@ -70,8 +70,8 @@ Weather_Agent/
 
 ```bash
 # Clone the repository
-git clone https://github.com/Rohit18457/ReAct-Weather-Agent.git
-cd ReAct-Weather-Agent
+git clone https://github.com/Rohit18457/AutoCodeX.git
+cd AutoCodeX
 
 # Create and activate virtual environment
 python -m venv venv
