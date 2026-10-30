@@ -22,6 +22,9 @@ Operating on the **ReAct (Reasoning + Acting)** and **Chain-of-Thought (CoT)** e
   - `run_command(command)`: Execute terminal commands (e.g. `python script.py`, `pytest`, `git status`) and capture real `stdout`/`stderr` outputs.
 - **🌦️ Utility Tools:**
   - `get_weather(city)`: Fetch live weather conditions via `wttr.in`.
+- **🛡️ Human-in-the-Loop Safety Guard:**
+  - **Permission Check:** Prompts for explicit user confirmation `(y/n)` before executing any shell command or overwriting existing files.
+  - **Protected Git Operations:** Strictly prohibits automated `git push` commands—pushing to remote repositories remains exclusively under human control.
 - **🛡️ Strict JSON Schema Validation:**
   - Guarantees deterministic, machine-readable steps using Groq's strict schema compliance (`strict: True`, `additionalProperties: false`).
 - **🔄 Fault-Tolerant ReAct Loop:**
@@ -37,9 +40,14 @@ flowchart TD
     Agent -->|Step 1| Start[START: Parse Goal]
     Start -->|Step 2| Plan[PLAN: Formulate Step]
     Plan --> Decision{Requires Tool?}
-    Decision -->|Yes| Tool[TOOL: list_files / read_file / write_file / edit_file / run_command]
+    Decision -->|Yes| Safety{Destructive or Shell Action?}
+    Safety -->|Yes| Prompt[Prompt User: Confirm y/n]
+    Prompt -->|Approved| Tool[TOOL: Execute Tool]
+    Prompt -->|Denied| Denied[Action Blocked: Return Observation]
+    Safety -->|No| Tool
     Tool --> Execute[Dispatcher Executes Tool & Captures Output]
     Execute --> Observe[OBSERVE: Feed result back into Agent context]
+    Denied --> Observe
     Observe --> Plan
     Decision -->|No| Output[OUTPUT: Synthesize & Deliver Response]
     Output --> Done([Ready for Next User Command])

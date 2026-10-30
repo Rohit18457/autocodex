@@ -134,6 +134,40 @@ available_tools = {
 }
 
 
+def check_safety_permission(tool_name: str, kwargs: dict) -> tuple[bool, Optional[str]]:
+    """Evaluates whether an action requires explicit user confirmation or is restricted."""
+    if tool_name == "run_command":
+        cmd = kwargs.get("command", "").strip()
+        # Strictly forbid git push by agent
+        if "git push" in cmd.lower():
+            return False, "Security restriction: 'git push' commands are strictly reserved for the user and cannot be executed by the agent."
+
+        print("\n⚠️  [SAFETY GUARD] The agent requests permission to run shell command:")
+        print(f"   Command: {cmd}")
+        try:
+            choice = input("   Allow execution? (y/n) > ").strip().lower()
+        except (KeyboardInterrupt, EOFError):
+            return False, "Execution aborted by user."
+
+        if choice not in ["y", "yes"]:
+            return False, "User denied permission to execute this command."
+
+    elif tool_name == "write_file":
+        path = kwargs.get("path", "")
+        if os.path.exists(path):
+            print(f"\n⚠️  [SAFETY GUARD] File '{path}' already exists.")
+            print("   The agent wants to overwrite its contents.")
+            try:
+                choice = input("   Allow overwrite? (y/n) > ").strip().lower()
+            except (KeyboardInterrupt, EOFError):
+                return False, "Execution aborted by user."
+
+            if choice not in ["y", "yes"]:
+                return False, f"User denied permission to overwrite '{path}'."
+
+    return True, None
+
+
 def execute_tool(tool_name: str, raw_input: Optional[str]) -> str:
     """Dispatches tool calls handling JSON dictionaries or direct argument strings."""
     if tool_name not in available_tools:
@@ -161,6 +195,11 @@ def execute_tool(tool_name: str, raw_input: Optional[str]) -> str:
 
     if "arg" in kwargs:
         kwargs = {param_names[0]: kwargs["arg"]}
+
+    # Safety Guard check before running tool
+    is_safe, error_message = check_safety_permission(tool_name, kwargs)
+    if not is_safe:
+        return f"Action blocked: {error_message}"
 
     try:
         return fn(**kwargs)
@@ -191,6 +230,8 @@ Rules:
 - Only run one step at a time.
 - For tool calls with multiple arguments, supply them as a valid JSON string inside 'input'.
 - Do not invent tool outputs; rely strictly on OBSERVE results.
+- Human-in-the-Loop Safety Policy: For your safety, the system will pause and ask the user for confirmation (y/n) before running any shell commands (run_command) or overwriting existing files. Read-only actions (read_file, list_files) and creating brand new files run automatically.
+- NEVER attempt to run 'git push'. Pushing code to remote repositories is strictly reserved for the human user.
 
 Output JSON Format:
 {
